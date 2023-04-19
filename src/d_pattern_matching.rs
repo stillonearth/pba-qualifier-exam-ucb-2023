@@ -6,35 +6,55 @@
 
 /// Returns true if the last two strings in the vector start with `PBA`.
 pub fn match_1(input: Vec<String>) -> bool {
-	todo!();
+	let input_length = input.len();
+	assert!(input_length >= 2);
+	let pba = "PBA".to_string();
+	let last_elements: [String; 2] = [
+		input[input.len() - 2][0..3].to_string(),
+		input[input.len() - 1][0..3].to_string(),
+	];
+
+	matches!(pba, last_elements)
 }
 
 /// Returns true if the first and last string in the vector start with `PBA`.
 pub fn match_2(input: Vec<String>) -> bool {
-	todo!();
+	let input_length = input.len();
+	assert!(input_length >= 1);
+	let pba = "PBA".to_string();
+	let last_elements: [String; 2] = [
+		input[0][0..3].to_string(),
+		input[input.len() - 1][0..3].to_string(),
+	];
+
+	matches!(pba, last_elements)
 }
 
 /// Returns true if the first item in `input` is true.
 pub fn match_3(input: (bool, bool, bool)) -> bool {
-	todo!();
+	// doing match making to sense here
+	return input.0;
 }
 
 /// Returns true if the input is `Ok(x)` of some even `x`.
 pub fn match_4(input: Result<u32, &'static str>) -> bool {
-	todo!();
+	match input {
+		Ok(x) if x % 2 == 0 => true,
+		_ => false,
+	}
 }
 
 /// This function is not graded. It is just for collecting feedback.
 /// On a scale from 0 - 255, with zero being extremely easy and 255 being extremely hard,
 /// how hard did you find this section of the exam.
 pub fn how_hard_was_this_section() -> u8 {
-	todo!()
+	228
 }
 
 /// This function is not graded. It is just for collecting feedback.
 /// How much time (in hours) did you spend on this section of the exam?
 pub fn how_many_hours_did_you_spend_on_this_section() -> u8 {
-	todo!()
+	1
 }
 
 #[cfg(test)]
