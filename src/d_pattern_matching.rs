@@ -9,12 +9,12 @@ pub fn match_1(input: Vec<String>) -> bool {
 	let input_length = input.len();
 	assert!(input_length >= 2);
 	let pba = "PBA".to_string();
-	let last_elements: [String; 2] = [
+	let last_elements = (
 		input[input.len() - 2][0..3].to_string(),
 		input[input.len() - 1][0..3].to_string(),
-	];
+	);
 
-	matches!(pba, last_elements)
+	matches!(pba, pba if pba == last_elements.0 && pba == last_elements.1)
 }
 
 /// Returns true if the first and last string in the vector start with `PBA`.
@@ -22,12 +22,12 @@ pub fn match_2(input: Vec<String>) -> bool {
 	let input_length = input.len();
 	assert!(input_length >= 1);
 	let pba = "PBA".to_string();
-	let last_elements: [String; 2] = [
+	let last_elements = (
 		input[0][0..3].to_string(),
 		input[input.len() - 1][0..3].to_string(),
-	];
+	);
 
-	matches!(pba, last_elements)
+	matches!(pba, pba if pba == last_elements.0 && pba == last_elements.1)
 }
 
 /// Returns true if the first item in `input` is true.
