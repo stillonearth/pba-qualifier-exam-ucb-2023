@@ -121,7 +121,9 @@ pub trait ProvideEnergy<F: Fuel> {
 	///
 	/// This method must be provided as it will be the same in all implementations.
 	fn provide_energy_with_efficiency(&self, f: FuelContainer<F>, e: u8) -> <F as Fuel>::Output {
-		(f.amount / 100 * e as u32).into()
+		let e = 100.0 / e.min(100) as f32;
+
+		((f.amount as f32 * e).ceil() as u32).into()
 	}
 
 	/// Same as [`ProvideEnergy::provide_energy_with_efficiency`], but with an efficiency of 100.
@@ -160,11 +162,12 @@ impl<const DECAY: u32> InternalCombustion<DECAY> {
 	}
 }
 
-impl<const DECAY: u32> ProvideEnergy<Uranium> for InternalCombustion<DECAY> {
-	fn provide_energy(&self, f: FuelContainer<Uranium>) -> <Uranium as Fuel>::Output {
+impl<const DECAY: u32> ProvideEnergy<Diesel> for InternalCombustion<DECAY> {
+	fn provide_energy(&self, f: FuelContainer<Diesel>) -> <Diesel as Fuel>::Output {
 		let counter = self.times_called.clone().into_inner();
 		self.times_called
 			.swap(&std::cell::RefCell::new(counter + 1));
+
 		self.provide_energy_with_efficiency(f, self.efficiency - (counter / DECAY) as u8)
 	}
 }
@@ -256,6 +259,7 @@ impl<F: Fuel + IsRenewable> ProvideEnergy<F> for GreenEngine<F> {
 pub struct BritishEngine<F: Fuel>(pub PhantomData<F>);
 impl<F: Fuel> ProvideEnergy<F> for BritishEngine<F> {
 	fn provide_energy(&self, f: FuelContainer<F>) -> <F as Fuel>::Output {
+		// I'm having hard specifiying internal type here
 		self.provide_energy_with_efficiency(f, 100)
 	}
 }
