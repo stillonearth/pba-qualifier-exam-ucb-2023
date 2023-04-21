@@ -36,6 +36,7 @@ use crate::e_common_traits::Employee;
 /// assert!(fail.is_err());
 /// # }
 /// ```
+#[derive(Default)]
 pub struct EmployeeBuilder {
 	name: Option<String>,
 	uid: Option<u32>,
@@ -43,16 +44,7 @@ pub struct EmployeeBuilder {
 	wage: u32,
 }
 
-impl Default for EmployeeBuilder {
-	fn default() -> Self {
-		Self {
-			name: None,
-			uid: None,
-			wage: 0,
-			experience: 0,
-		}
-	}
-}
+
 
 impl EmployeeBuilder {
 	pub fn name(self, name: String) -> Self {

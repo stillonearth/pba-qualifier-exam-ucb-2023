@@ -33,7 +33,7 @@ pub fn match_2(input: Vec<String>) -> bool {
 /// Returns true if the first item in `input` is true.
 pub fn match_3(input: (bool, bool, bool)) -> bool {
 	// doing match making to sense here
-	return input.0;
+	input.0
 }
 
 /// Returns true if the input is `Ok(x)` of some even `x`.

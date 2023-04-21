@@ -57,7 +57,7 @@ impl Fuel for Diesel {
 	type Output = Joule;
 	fn energy_density() -> Self::Output {
 		let b: BTU = 100;
-		return b.into();
+		b.into()
 	}
 }
 
@@ -66,7 +66,7 @@ impl Fuel for LithiumBattery {
 	type Output = Calorie;
 	fn energy_density() -> Self::Output {
 		let b: BTU = 200;
-		return b.into();
+		b.into()
 	}
 }
 
@@ -75,7 +75,7 @@ impl Fuel for Uranium {
 	type Output = Joule;
 	fn energy_density() -> Self::Output {
 		let b: BTU = 1000;
-		return b.into();
+		b.into()
 	}
 }
 
@@ -121,9 +121,10 @@ pub trait ProvideEnergy<F: Fuel> {
 	///
 	/// This method must be provided as it will be the same in all implementations.
 	fn provide_energy_with_efficiency(&self, f: FuelContainer<F>, e: u8) -> <F as Fuel>::Output {
-		let e = 100.0 / e.min(100) as f32;
-
-		((f.amount as f32 * e).ceil() as u32).into()
+		let e = e as f32 / 100.0;
+		let density = F::energy_density();
+		let amount_btu = f.amount * density.into();
+		((amount_btu as f32 * e).ceil() as u32).into()
 	}
 
 	/// Same as [`ProvideEnergy::provide_energy_with_efficiency`], but with an efficiency of 100.
@@ -155,10 +156,10 @@ pub struct InternalCombustion<const DECAY: u32> {
 
 impl<const DECAY: u32> InternalCombustion<DECAY> {
 	pub fn new(efficiency: u8) -> Self {
-		return Self {
-			efficiency,
+		Self {
+			efficiency: efficiency.min(100),
 			times_called: std::cell::RefCell::new(0),
-		};
+		}
 	}
 }
 
@@ -167,6 +168,8 @@ impl<const DECAY: u32> ProvideEnergy<Diesel> for InternalCombustion<DECAY> {
 		let counter = self.times_called.clone().into_inner();
 		self.times_called
 			.swap(&std::cell::RefCell::new(counter + 1));
+
+		eprintln!("{} \t {} / {}", self.efficiency, counter, DECAY);
 
 		self.provide_energy_with_efficiency(f, self.efficiency - (counter / DECAY) as u8)
 	}
@@ -199,7 +202,7 @@ impl<F1: Fuel, F2: Fuel> Fuel for Mixed<F1, F2> {
 		let f1: BTU = F1::energy_density().into();
 		let f2: BTU = F2::energy_density().into();
 
-		return (f1 + f2) / 2;
+		(f1 + f2) / 2
 	}
 }
 
@@ -221,7 +224,7 @@ impl<const C: u8, F1: Fuel, F2: Fuel> Fuel for CustomMixed<C, F1, F2> {
 		let f1: BTU = F1::energy_density().into();
 		let f2: BTU = F2::energy_density().into();
 
-		return f1 / 100 * C.min(100) as u32 + f2 / 100 * (100 - C.min(100)) as u32;
+		f1 / 100 * C.min(100) as u32 + f2 / 100 * (100 - C.min(100)) as u32
 	}
 }
 

@@ -18,7 +18,7 @@ pub fn sum_of_squares(vals: impl Iterator<Item = u32>) -> u32 {
 /// away any values that are greater than 100. The remaining positive values are returned as an
 /// iterator of u32s.
 pub fn bounded_absolute_values(vals: impl Iterator<Item = i32>) -> impl Iterator<Item = u32> {
-	vals.filter(|v| v.abs() <= 100).map(|v| v.abs() as u32)
+	vals.filter(|v| v.abs() <= 100).map(|v| v.unsigned_abs())
 }
 
 // We allow `unused_mut` only so that there is no build warning on the starter code.
@@ -40,7 +40,7 @@ pub fn first_n_even(mut vals: impl Iterator<Item = u32>) -> Option<impl Iterator
 			.map(|(_, e)| e);
 		return Some(result);
 	}
-	return None;
+	None
 }
 
 /// Return an "infinite" iterator that yields the squares of the whole numbers.
@@ -70,8 +70,8 @@ pub fn square_whole_numbers() -> impl Iterator<Item = u32> {
 		}
 	}
 
-	let counter = InfiniteCounter::new();
-	return counter;
+	
+	InfiniteCounter::new()
 }
 
 /// An iterator that generates the Fibonacci sequence.
@@ -100,7 +100,7 @@ impl Iterator for Fibonacci {
 		self.prev_prev = self.prev;
 		self.prev = Some(new_value);
 
-		return self.prev;
+		self.prev
 	}
 }
 
