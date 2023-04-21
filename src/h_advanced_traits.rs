@@ -215,7 +215,10 @@ impl<const C: u8, F1: Fuel, F2: Fuel> Fuel for CustomMixed<C, F1, F2> {
 	type Output = BTU;
 
 	fn energy_density() -> Self::Output {
-		todo!("complete the implementation; note that you might need to change the trait bounds and generics of the `impl` line");
+		let f1: BTU = F1::energy_density().into();
+		let f2: BTU = F2::energy_density().into();
+
+		return f1 / 100 * C.min(100) as u32 + f2 / 100 * (100 - C.min(100)) as u32;
 	}
 }
 
@@ -224,7 +227,9 @@ impl<const C: u8, F1: Fuel, F2: Fuel> Fuel for CustomMixed<C, F1, F2> {
 /// A function that returns the energy produced by the `OmniGenerator` with efficiency of 80%, when
 /// the fuel type is an even a mix of `Diesel` as `LithiumBattery`;
 pub fn omni_80_energy(amount: u32) -> BTU {
-	todo!();
+	let generator = OmniGenerator::<80>;
+	let container = FuelContainer::<Mixed<Diesel, LithiumBattery>>::new(amount);
+	generator.provide_energy(container)
 }
 
 // Finally, let's consider marker traits, and some trait bounds.
@@ -238,9 +243,9 @@ impl IsRenewable for LithiumBattery {}
 ///
 /// It has perfect efficiency.
 pub struct GreenEngine<F: Fuel>(pub PhantomData<F>);
-impl<F: Fuel> ProvideEnergy<F> for GreenEngine<F> {
+impl<F: Fuel + IsRenewable> ProvideEnergy<F> for GreenEngine<F> {
 	fn provide_energy(&self, f: FuelContainer<F>) -> <F as Fuel>::Output {
-		todo!("complete the implementation; note that you might need to change the trait bounds and generics of the `impl` line");
+		self.provide_energy_with_efficiency(f, 100)
 	}
 }
 
@@ -251,7 +256,7 @@ impl<F: Fuel> ProvideEnergy<F> for GreenEngine<F> {
 pub struct BritishEngine<F: Fuel>(pub PhantomData<F>);
 impl<F: Fuel> ProvideEnergy<F> for BritishEngine<F> {
 	fn provide_energy(&self, f: FuelContainer<F>) -> <F as Fuel>::Output {
-		todo!("complete the implementation; note that you might need to change the trait bounds and generics of the `impl` line");
+		self.provide_energy_with_efficiency(f, 100)
 	}
 }
 
@@ -266,13 +271,13 @@ impl<F: Fuel> ProvideEnergy<F> for BritishEngine<F> {
 /// On a scale from 0 - 255, with zero being extremely easy and 255 being extremely hard,
 /// how hard did you find this section of the exam.
 pub fn how_hard_was_this_section() -> u8 {
-	todo!()
+	228
 }
 
 /// This function is not graded. It is just for collecting feedback.
 /// How much time (in hours) did you spend on this section of the exam?
 pub fn how_many_hours_did_you_spend_on_this_section() -> u8 {
-	todo!()
+	3
 }
 
 #[cfg(test)]
