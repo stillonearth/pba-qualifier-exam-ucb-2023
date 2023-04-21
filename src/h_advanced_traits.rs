@@ -148,21 +148,24 @@ impl ProvideEnergy<Uranium> for NuclearReactor {
 /// must be configurable with a `fn new(efficiency: u8) -> Self`.
 pub struct InternalCombustion<const DECAY: u32> {
 	efficiency: u8,
-	times_called: u32,
+	times_called: std::cell::RefCell<u32>,
 }
 
 impl<const DECAY: u32> InternalCombustion<DECAY> {
 	pub fn new(efficiency: u8) -> Self {
 		return Self {
 			efficiency,
-			times_called: 0,
+			times_called: std::cell::RefCell::new(0),
 		};
 	}
 }
 
 impl<const DECAY: u32> ProvideEnergy<Uranium> for InternalCombustion<DECAY> {
 	fn provide_energy(&self, f: FuelContainer<Uranium>) -> <Uranium as Fuel>::Output {
-		self.provide_energy_with_efficiency(f, self.efficiency - (self.times_called / DECAY) as u8)
+		let counter = self.times_called.clone().into_inner();
+		self.times_called
+			.swap(&std::cell::RefCell::new(counter + 1));
+		self.provide_energy_with_efficiency(f, self.efficiency - (counter / DECAY) as u8)
 	}
 }
 
