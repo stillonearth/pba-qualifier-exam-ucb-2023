@@ -56,7 +56,8 @@ pub struct Diesel;
 impl Fuel for Diesel {
 	type Output = Joule;
 	fn energy_density() -> Self::Output {
-		todo!("100 BTU")
+		let b: BTU = 100;
+		return b.into();
 	}
 }
 
@@ -64,7 +65,8 @@ pub struct LithiumBattery;
 impl Fuel for LithiumBattery {
 	type Output = Calorie;
 	fn energy_density() -> Self::Output {
-		todo!("200 BTU")
+		let b: BTU = 200;
+		return b.into();
 	}
 }
 
@@ -72,7 +74,8 @@ pub struct Uranium;
 impl Fuel for Uranium {
 	type Output = Joule;
 	fn energy_density() -> Self::Output {
-		todo!("1000 BTU")
+		let b: BTU = 1000;
+		return b.into();
 	}
 }
 
@@ -118,24 +121,33 @@ pub trait ProvideEnergy<F: Fuel> {
 	///
 	/// This method must be provided as it will be the same in all implementations.
 	fn provide_energy_with_efficiency(&self, f: FuelContainer<F>, e: u8) -> <F as Fuel>::Output {
-		todo!();
+		(f.amount / 100 * e as u32).into()
 	}
 
 	/// Same as [`ProvideEnergy::provide_energy_with_efficiency`], but with an efficiency of 100.
 	///
 	/// This method must be provided as it will be the same in all implementations.
 	fn provide_energy_ideal(&self, f: FuelContainer<F>) -> <F as Fuel>::Output {
-		todo!();
+		self.provide_energy_with_efficiency(f, 100)
 	}
 }
 
 /// A nuclear reactor that can only consume `Uranium` and provide energy with 99% efficiency.
+
 pub struct NuclearReactor;
-impl<F: Fuel> ProvideEnergy<F> for NuclearReactor {
-	fn provide_energy(&self, f: FuelContainer<F>) -> <F as Fuel>::Output {
-		todo!("complete the implementation; note that you might need to change the trait bounds and generics of the `impl` line");
+impl ProvideEnergy<Uranium> for NuclearReactor {
+	fn provide_energy(&self, f: FuelContainer<Uranium>) -> <Uranium as Fuel>::Output {
+		self.provide_energy_with_efficiency(f, 99)
 	}
 }
+
+// pub struct NuclearReactor;
+// impl ProvideEnergy<Uranium> for NuclearReactor {
+// 	#[allow(implied_bounds_entailment)]
+// 	fn provide_energy(&self, f: FuelContainer<Uranium>) -> <F as Fuel>::Output {
+// 		self.provide_energy_with_efficiency(f, 99)
+// 	}
+// }
 
 /// A combustion engine that can only consume `Diesel`.
 ///
