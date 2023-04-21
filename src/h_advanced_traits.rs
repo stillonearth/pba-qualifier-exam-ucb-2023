@@ -177,7 +177,7 @@ pub struct OmniGenerator<const EFFICIENCY: u8>;
 // NOTE: implement `ProvideEnergy` for `OmniGenerator` using only one `impl` block.
 impl<const EFFICIENCY: u8, F: Fuel> ProvideEnergy<F> for OmniGenerator<EFFICIENCY> {
 	fn provide_energy(&self, f: FuelContainer<F>) -> <F as Fuel>::Output {
-		todo!("complete the implementation; note that you might need to change the trait bounds and generics of the `impl` line");
+		self.provide_energy_with_efficiency(f, EFFICIENCY.min(100))
 	}
 }
 
@@ -193,7 +193,10 @@ impl<F1: Fuel, F2: Fuel> Fuel for Mixed<F1, F2> {
 	type Output = BTU;
 
 	fn energy_density() -> Self::Output {
-		todo!("complete the implementation; note that you might need to change the trait bounds and generics of the `impl` line");
+		let f1: BTU = F1::energy_density().into();
+		let f2: BTU = F2::energy_density().into();
+
+		return (f1 + f2) / 2;
 	}
 }
 
