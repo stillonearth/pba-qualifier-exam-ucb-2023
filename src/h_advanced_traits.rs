@@ -141,30 +141,28 @@ impl ProvideEnergy<Uranium> for NuclearReactor {
 	}
 }
 
-// pub struct NuclearReactor;
-// impl ProvideEnergy<Uranium> for NuclearReactor {
-// 	#[allow(implied_bounds_entailment)]
-// 	fn provide_energy(&self, f: FuelContainer<Uranium>) -> <F as Fuel>::Output {
-// 		self.provide_energy_with_efficiency(f, 99)
-// 	}
-// }
-
 /// A combustion engine that can only consume `Diesel`.
 ///
 /// The `DECAY` const must be interpreted as such: per every `DECAY` times `provide_energy` is
 /// called on an instance of this type, the efficiency should reduce by one. The initial efficiency
 /// must be configurable with a `fn new(efficiency: u8) -> Self`.
-pub struct InternalCombustion<const DECAY: u32>(/* Fill the fields as needed */);
+pub struct InternalCombustion<const DECAY: u32> {
+	efficiency: u8,
+	times_called: u32,
+}
 
 impl<const DECAY: u32> InternalCombustion<DECAY> {
 	pub fn new(efficiency: u8) -> Self {
-		todo!()
+		return Self {
+			efficiency,
+			times_called: 0,
+		};
 	}
 }
 
-impl<const DECAY: u32, F: Fuel> ProvideEnergy<F> for InternalCombustion<DECAY> {
-	fn provide_energy(&self, f: FuelContainer<F>) -> <F as Fuel>::Output {
-		todo!("complete the implementation; note that you might need to change the trait bounds and generics of the `impl` line");
+impl<const DECAY: u32> ProvideEnergy<Uranium> for InternalCombustion<DECAY> {
+	fn provide_energy(&self, f: FuelContainer<Uranium>) -> <Uranium as Fuel>::Output {
+		self.provide_energy_with_efficiency(f, self.efficiency - (self.times_called / DECAY) as u8)
 	}
 }
 
