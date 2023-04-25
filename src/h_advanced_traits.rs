@@ -260,9 +260,11 @@ impl<F: Fuel + IsRenewable> ProvideEnergy<F> for GreenEngine<F> {
 ///
 /// It has perfect efficiency.
 pub struct BritishEngine<F: Fuel>(pub PhantomData<F>);
-impl<F: Fuel> ProvideEnergy<F> for BritishEngine<F> {
+impl<F: Fuel> ProvideEnergy<F> for BritishEngine<F>
+where
+	F: Fuel<Output = BTU>,
+{
 	fn provide_energy(&self, f: FuelContainer<F>) -> <F as Fuel>::Output {
-		// I'm having hard specifiying internal type here
 		self.provide_energy_with_efficiency(f, 100)
 	}
 }

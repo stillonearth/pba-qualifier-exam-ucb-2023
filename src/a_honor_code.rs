@@ -64,7 +64,7 @@ pub fn coding_no_external_deps() -> bool {
 /// You are not allowed to use AI assisted coding tools like Github Copilot to complete this exam.
 pub fn coding_no_ai_helpers() -> bool {
 	// If you have followed this rule, return `true`
-	true
+	false
 }
 
 #[cfg(test)]

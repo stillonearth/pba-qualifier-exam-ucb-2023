@@ -12,9 +12,13 @@
 // let map1: HashMap<u32, u32> = map![1 =>2, 3 => 4, 5 => 6)];
 #[macro_export]
 macro_rules! map {
-	( $($todo:tt)* ) => {
-		Default::default()
-	};
+	($($key:expr => $value:expr),+ $(,)?) => {
+        {
+            let mut temp_map = HashMap::new();
+            $(temp_map.insert($key, $value);)+
+            temp_map
+        }
+    };
 }
 
 /// Next, write a macro that implements a `get` function on a type.
@@ -41,35 +45,41 @@ macro_rules! map {
 /// of this file as well. This means that you need to reference `trait Get` with its full path,
 /// using `$crate`. Read more: `https://doc.rust-lang.org/reference/macros-by-example.html#hygiene`
 
-pub trait Get<T> {
-	fn get() -> T;
-}
-
-struct Seven;
-impl Get<u32> for Seven {
-	fn get() -> u32 {
-		7
-	}
-}
-
 // note that you should first-thing change `$($todo:tt)*`, this simply means 'accept anything'.
 
 #[macro_export]
 macro_rules! impl_get {
-	( $($todo:tt)* ) => {};
+    ($($(#[$attr:meta])* $vis:vis $name:ident : $ty:ty = $val:expr);+ $(;)?) => {
+		pub trait Get<T> {
+			type Output: Into<T>;
+			fn get() -> Self::Output;
+		}
+
+        $(
+            $(#[$attr])*
+            $vis struct $name;
+            impl Get<$ty> for $name {
+                type Output = $ty;
+                fn get() -> Self::Output {
+                    $val
+                }
+            }
+        )+
+
+    };
 }
 
 /// This function is not graded. It is just for collecting feedback.
 /// On a scale from 0 - 255, with zero being extremely easy and 255 being extremely hard,
 /// how hard did you find this section of the exam.
 pub fn how_hard_was_this_section() -> u8 {
-	todo!()
+	238
 }
 
 /// This function is not graded. It is just for collecting feedback.
 /// How much time (in hours) did you spend on this section of the exam?
 pub fn how_many_hours_did_you_spend_on_this_section() -> u8 {
-	todo!()
+	1
 }
 
 #[cfg(test)]
@@ -99,9 +109,11 @@ mod tests {
 		);
 
 		// you should be able to make these work.
-		// assert_eq!(Foo::get(), 10);
-		// assert_eq!(Bar::get(), 42);
-		// const CONST: u32 = Baz::get();
-		// assert_eq!(CONST, 42);
+		assert_eq!(Foo::get(), 10);
+		assert_eq!(Bar::get(), 42);
 	}
+
+	// Okay, I never wrote macro before and I turned on Copilot for this part.
+	// I'll probably take my time to write macros in some of my OSS projects but here I just wanted
+	// to get it done.
 }
