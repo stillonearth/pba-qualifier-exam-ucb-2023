@@ -44,27 +44,38 @@ pub struct EmployeeBuilder {
 	wage: u32,
 }
 
-
-
 impl EmployeeBuilder {
 	pub fn name(self, name: String) -> Self {
-		todo!("finish the implementation.");
+		let mut copy = self;
+		copy.name = Some(name);
+		return copy;
 	}
 
 	pub fn uid(self, uid: u32) -> Self {
-		todo!("finish the implementation.");
+		let mut copy = self;
+		copy.uid = Some(uid);
+		return copy;
 	}
 
 	pub fn experience(self, experience: u32) -> Self {
-		todo!("finish the implementation.");
+		let mut copy = self;
+		copy.experience = experience;
+		return copy;
 	}
 
 	pub fn wage(self, wage: u32) -> Self {
-		todo!("finish the implementation.");
+		let mut copy = self;
+		copy.wage = wage;
+		return copy;
 	}
 
 	pub fn build(self) -> Result<Employee, ()> {
-		todo!("finish the implementation.");
+		return Ok(Employee {
+			name: self.name.ok_or(())?,
+			uid: self.uid.ok_or(())?,
+			experience: self.experience,
+			wage: self.wage,
+		});
 	}
 }
 
@@ -148,25 +159,82 @@ impl Default for TypedEmployeeBuilder<NotNamed, UnIdentified> {
 	}
 }
 
-impl<Name, Id> TypedEmployeeBuilder<Name, Id> {
+impl Default for TypedEmployeeBuilder<Named, UnIdentified> {
+	fn default() -> Self {
+		Self {
+			experience: 0,
+			wage: 0,
+			name: Named {
+				name: "".to_string(),
+			},
+			uid: UnIdentified,
+		}
+	}
+}
+
+impl Default for TypedEmployeeBuilder<Named, Identified> {
+	fn default() -> Self {
+		Self {
+			experience: 0,
+			wage: 0,
+			name: Named {
+				name: "".to_string(),
+			},
+			uid: Identified { uid: 0 },
+		}
+	}
+}
+
+impl Default for TypedEmployeeBuilder<NotNamed, Identified> {
+	fn default() -> Self {
+		Self {
+			experience: 0,
+			wage: 0,
+			name: NotNamed,
+			uid: Identified { uid: 0 },
+		}
+	}
+}
+
+impl<Id> TypedEmployeeBuilder<Named, Id> {
 	pub fn name(self, name: String) -> Self {
-		todo!("finish the implementation. Note that you might need to move some of these functions to a new `impl` blocks with different trait bounds, or change the return type to use `Named` etc.");
+		let mut copy = self;
+		let name = Named { name };
+		copy.name = name;
+		return copy;
 	}
+}
 
+impl TypedEmployeeBuilder<Named, Identified> {
+	pub fn build(self) -> Employee {
+		Employee {
+			name: self.name.name,
+			uid: self.uid.uid,
+			experience: self.experience,
+			wage: self.wage,
+		}
+	}
+}
+
+impl<Name> TypedEmployeeBuilder<Name, Identified> {
 	pub fn uid(self, uid: u32) -> Self {
-		todo!("finish the implementation. Note that you might need to move some of these functions to a new `impl` blocks with different trait bounds, or change the return type to use `Named` etc.");
+		let mut copy = self;
+		copy.uid = Identified { uid };
+		return copy;
 	}
+}
 
+impl<Name, Id> TypedEmployeeBuilder<Name, Id> {
 	pub fn experience(self, experience: u32) -> Self {
-		todo!("finish the implementation. Note that you might need to move some of these functions to a new `impl` blocks with different trait bounds, or change the return type to use `Named` etc.");
+		let mut copy = self;
+		copy.experience = experience;
+		return copy;
 	}
 
 	pub fn wage(self, wage: u32) -> Self {
-		todo!("finish the implementation. Note that you might need to move some of these functions to a new `impl` blocks with different trait bounds, or change the return type to use `Named` etc.");
-	}
-
-	pub fn build(self) -> Employee {
-		todo!("finish the implementation. Note that you might need to move some of these functions to a new `impl` blocks with different trait bounds, or change the return type to use `Named` etc.");
+		let mut copy = self;
+		copy.wage = wage;
+		return copy;
 	}
 }
 
@@ -174,11 +242,11 @@ impl<Name, Id> TypedEmployeeBuilder<Name, Id> {
 /// On a scale from 0 - 255, with zero being extremely easy and 255 being extremely hard,
 /// how hard did you find this section of the exam.
 pub fn how_hard_was_this_section() -> u8 {
-	todo!()
+	228
 }
 
 /// This function is not graded. It is just for collecting feedback.
 /// How much time (in hours) did you spend on this section of the exam?
 pub fn how_many_hours_did_you_spend_on_this_section() -> u8 {
-	todo!()
+	1
 }
